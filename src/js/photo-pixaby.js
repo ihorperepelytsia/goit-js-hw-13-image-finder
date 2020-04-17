@@ -1,0 +1,75 @@
+import { error } from '@pnotify/core';
+import '@pnotify/core/BrightTheme.css';
+import '@pnotify/core/dist/PNotify.css';
+import photoService from './apiService';
+import photoCardTemplate from '../templates/photo-card.hbs';
+import spinner from './spinner';
+import { showModal, closeModal } from './lightBox';
+
+const refs = {
+  searchForm: document.querySelector('#search-form'),
+  gallery: document.querySelector('.gallery'),
+  loadMoreBtn: document.querySelector('button[data-action="load-more"]'),
+};
+
+refs.searchForm.addEventListener('submit', searchFormSubmitHendler);
+refs.loadMoreBtn.addEventListener('click', loadMoreBtnHandler);
+refs.gallery.addEventListener('click', showModal);
+document.addEventListener('keydown', closeModal);
+document.addEventListener('mouseup', closeModal);
+
+function searchFormSubmitHendler(e) {
+  e.preventDefault();
+
+  const inputValue = e.currentTarget.elements.query.value;
+
+  if (inputValue.length <= 1) {
+    error({
+      text: 'Введите больше символов',
+    });
+    return;
+  }
+  clearListItems();
+  photoService.resetPage();
+  photoService.searchQuery = inputValue;
+  catchShow();
+}
+
+function loadMoreBtnHandler() {
+  setTimeout(() => {
+    window.scrollTo({
+      top: window.scrollY + window.innerHeight,
+      behavior: 'smooth',
+    });
+  }, 1000);
+  catchShow();
+}
+
+function catchShow() {
+  spinner.show();
+  photoService
+    .fetchPhoto()
+    .then(hits => {
+      spinner.hide();
+      wrongInput(hits);
+      isertListItems(hits);
+    })
+    .catch(error => console.warn(error));
+}
+
+function isertListItems(items) {
+  const markup = photoCardTemplate(items);
+  refs.gallery.insertAdjacentHTML('beforeend', markup);
+}
+
+function clearListItems() {
+  refs.gallery.innerHTML = '';
+}
+
+function wrongInput(arr) {
+  if (arr.length === 0) {
+    error({
+      text: 'Ваш запрос слишком не понятный',
+    });
+  }
+}
