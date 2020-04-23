@@ -6,13 +6,15 @@ import photoCardTemplate from '../templates/photo-card.hbs';
 import spinner from './spinner';
 import { showModal, closeModal } from './lightBox';
 
+var debounce = require('lodash.debounce');
+
 const refs = {
   searchForm: document.querySelector('#search-form'),
   gallery: document.querySelector('.gallery'),
-  loadMoreBtn: document.querySelector('button[data-action="load-more"]'),
+  loadMoreBtn: document.querySelector('.box-load-more'),
 };
 
-refs.searchForm.addEventListener('submit', searchFormSubmitHendler);
+refs.searchForm.addEventListener('input', debounce(searchFormSubmitHendler, 750));
 refs.loadMoreBtn.addEventListener('click', loadMoreBtnHandler);
 refs.gallery.addEventListener('click', showModal);
 document.addEventListener('keydown', closeModal);
@@ -21,7 +23,7 @@ document.addEventListener('mouseup', closeModal);
 function searchFormSubmitHendler(e) {
   e.preventDefault();
 
-  const inputValue = e.currentTarget.elements.query.value;
+  const inputValue = e.target.value;
 
   if (inputValue.length <= 1) {
     error({
@@ -32,7 +34,9 @@ function searchFormSubmitHendler(e) {
   clearListItems();
   photoService.resetPage();
   photoService.searchQuery = inputValue;
+
   catchShow();
+  refs.loadMoreBtn.classList.remove('is-hidden')
 }
 
 function loadMoreBtnHandler() {
@@ -41,7 +45,7 @@ function loadMoreBtnHandler() {
       top: window.scrollY + window.innerHeight,
       behavior: 'smooth',
     });
-  }, 1000);
+  }, 1500);
   catchShow();
 }
 
