@@ -14,7 +14,7 @@ const refs = {
   loadMoreBtn: document.querySelector('.box-load-more'),
 };
 
-refs.searchForm.addEventListener('input', debounce(searchFormSubmitHendler, 750));
+refs.searchForm.addEventListener('input', debounce(searchFormSubmitHendler, 1750));
 refs.loadMoreBtn.addEventListener('click', loadMoreBtnHandler);
 refs.gallery.addEventListener('click', showModal);
 document.addEventListener('keydown', closeModal);
