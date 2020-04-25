@@ -14,7 +14,7 @@ const refs = {
   loadMoreBtn: document.querySelector('.box-load-more'),
 };
 
-refs.searchForm.addEventListener('input', debounce(searchFormSubmitHendler, 1750));
+refs.searchForm.addEventListener('submit', searchFormSubmitHendler);
 refs.loadMoreBtn.addEventListener('click', loadMoreBtnHandler);
 refs.gallery.addEventListener('click', showModal);
 document.addEventListener('keydown', closeModal);
@@ -23,7 +23,7 @@ document.addEventListener('mouseup', closeModal);
 function searchFormSubmitHendler(e) {
   e.preventDefault();
 
-  const inputValue = e.target.value;
+  const inputValue = e.target.elements.query.value;
 
   if (inputValue.length <= 1) {
     error({
@@ -36,7 +36,7 @@ function searchFormSubmitHendler(e) {
   photoService.searchQuery = inputValue;
 
   catchShow();
-  refs.loadMoreBtn.classList.remove('is-hidden')
+  refs.loadMoreBtn.classList.remove('is-hidden');
 }
 
 function loadMoreBtnHandler() {
